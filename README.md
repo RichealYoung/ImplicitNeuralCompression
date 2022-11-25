@@ -1,20 +1,18 @@
-# Implicit Neural Compression (INC)
+# 💾Implicit Neural Compression (INC)
 Welcome to INC! This repository is aimed at helping researchers or developers interested in
 INC data compression algorithms to quickly understand and reproduce our latest research.
 
-Implicit Neural Compression (INC) refers to the data copmpression methods that represent
-the target discrete grid-based data with continuous implicit functions parameterized by neural networks.
+<img src="docs/assets_readme/SCI_method.jpg" width="100%"/>
 
-The source code of SCI will be released soon!
+<img src="docs/assets_readme/SCI_compare_roi.jpg" width="80%"/>
 
-# SCI: A spectrum concentrated implicit neural compression for biomedical data
 
-## Quickstart
+# 🚀Quickstart
 
 ### 1. Create a conda environment
 
-    conda create -n sci python=3.10
-    conda activate sci
+    conda create -n inc python=3.10
+    conda activate inc
 
 ### 2. Install python libraries.
 	conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
@@ -32,52 +30,37 @@ The source code of SCI will be released soon!
 	pip3 install tensorboard
     pip3 install scikit-image
 
-### 3. Register Gurobi and get license
+<!-- ### 3. Register Gurobi and get license
 
 [Register and install an academic license](https://www.gurobi.com/downloads/free-academic-license/) 
-for the Gurobi optimizer (this is free for academic use).
+for the Gurobi optimizer (this is free for academic use). -->
 
-### 4. Compression
+### 3. Compression
 
-(1) Compress small data without any partitioning strategy.
+	python main.py -c config/SingleTask/default.yaml -g 2
 
-relevant compression parameters can be modified in **opt/SingleTask/default.yaml**.
+All hyper-parameters can be set in the YAML file.
 
-    bash 1_Single.sh
-final compressed file path: **outputs/single_{time}/exp/steps{step}/compressed/**
+❗Note: The partition methods will be released soon!
 
-final decompressed file path: **outputs/single_{time}/exp/steps{step}/decompressed/{name}_decompressed.tif**
+# 😘Citations
 
-training result: 
+	@misc{https://doi.org/10.48550/arxiv.2209.15180,
+	doi = {10.48550/ARXIV.2209.15180},
+	
+	url = {https://arxiv.org/abs/2209.15180},
+	
+	author = {Yang, Runzhao and Xiao, Tingxiong and Cheng, Yuxiao and Cao, Qianni and Qu, Jinyuan and Suo, Jinli and Dai, Qionghai},
+	
+	title = {SCI: A Spectrum Concentrated Implicit Neural Compression for Biomedical Data},
+	
+	publisher = {arXiv},
+	
+	year = {2022},
+	
+	copyright = {arXiv.org perpetual, non-exclusive license}
+	}
 
-    tensorboard --logdir=outputs/single_{time}
-
-(2) Compress big data with adaptive partitioning.
-
-relevant compression parameters can be modified in **opt/DivideTask/default.yaml**.
-
-    bash 2_Divide.sh
-final compressed file path: **outputs/divide_{time}/exp/steps{step}/compressed/**
-
-final decompressed file path: **outputs/divide_{time}/exp/steps{step}/decompressed/{name}_decompressed.tif**
-
-training result: 
-
-    tensorboard --logdir=outputs/divide_{time}
-
-(3) Run multiple tasks at once.
-
-relevant compression parameters can be modified in **opt/MultiTask/default.yaml**.
-
-    bash 3_MultiExp.sh
-final compressed file path: **outputs/{project}_{time}/exp/steps{step}/compressed/**
-
-final decompressed file path: **outputs/{project}_{time}/exp/steps{step}/decompressed/{name}_decompressed.tif**
-
-training result: 
-
-    tensorboard --logdir=outputs/{project}_{time}
-
-
-
-
+# 😀Contact
+If you need any help or are looking for cooperation feel free to contact us.
+yangrz20@mails.tsinghua.edu.cn
