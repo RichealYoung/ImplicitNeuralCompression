@@ -21,9 +21,9 @@ import tifffile
 import torch
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
-from util.metrics import calc_psnr, calc_ssim, get_folder_size, parse_checkpoints
+from utils.metrics import calc_psnr, calc_ssim, get_folder_size, parse_checkpoints
 
-from util.networks import (
+from utils.networks import (
     SIREN,
     configure_lr_scheduler,
     configure_optimizer,
@@ -32,7 +32,7 @@ from util.networks import (
     load_model,
     save_model,
 )
-from util.samplers import RandomPointSampler
+from utils.samplers import RandomPointSampler
 
 
 EXPERIMENTAL_CONDITIONS = ["data_name", "data_type", "data_shape", "actual_ratio"]

@@ -10,8 +10,8 @@ import time
 import argparse
 import shutil
 import subprocess
-from util.multitask_config_process import omegaconf2dotlist, CONCAT, omegaconf2dict
-from util.taskmangers import Task, Queue
+from utils.multitask_config_process import omegaconf2dotlist, CONCAT, omegaconf2dict
+from utils.taskmangers import Task, Queue
 
 timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S.%f")[:-3]
 
