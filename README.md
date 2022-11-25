@@ -2,7 +2,7 @@
 Welcome to INC! This repository is aimed at helping researchers or developers interested in
 INC data compression algorithms to quickly understand and reproduce our latest research.
 
-<img src="docs/assets_readme/SCI_method.jpg" width="100%"/>
+<img src="docs/assets_readme/SCI_method.jpg" width="80%"/>
 
 <img src="docs/assets_readme/SCI_compare_roi.jpg" width="80%"/>
 
@@ -43,6 +43,12 @@ All hyper-parameters can be set in the YAML file.
 
 ❗Note: The partition methods will be released soon!
 
+# 🧰Batch Experiments
+We have also provided a useful script for researchers to perform batch experiments quickly. You just need to configure this group of experiments in the YAML file, pick the GPUs, and start batch experiments with the following command.
+
+	python MultiTask.py -c config/MultiTask/default.yaml -stp main.py -g 0,1,2,3
+
+These experiments will automatically wait or execute depending on GPU utilization. All you have to do is a cup of coffee and watching the World Cup⚽.
 # 😘Citations
 
 	@misc{https://doi.org/10.48550/arxiv.2209.15180,
@@ -61,6 +67,6 @@ All hyper-parameters can be set in the YAML file.
 	copyright = {arXiv.org perpetual, non-exclusive license}
 	}
 
-# 😀Contact
+# 💡Contact
 If you need any help or are looking for cooperation feel free to contact us.
 yangrz20@mails.tsinghua.edu.cn
