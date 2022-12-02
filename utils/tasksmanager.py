@@ -1,13 +1,9 @@
 import subprocess
-from subprocess import Popen, PIPE
 import os
-import sys
 import time
 from typing import List
-import psutil
 import pynvml
 import time
-import copy
 import signal
 from urllib import request, parse
 

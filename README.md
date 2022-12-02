@@ -18,7 +18,6 @@ INC data compression algorithms to quickly understand and reproduce our latest r
 	conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
     pip3 install omegaconf
 	pip3 install pynvml
-	pip3 install psutil
 	pip3 install tqdm
 	pip3 install matplotlib
 	pip3 install pandas
