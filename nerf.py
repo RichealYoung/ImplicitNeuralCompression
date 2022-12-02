@@ -8,23 +8,19 @@ from os.path import dirname as opd
 from os.path import basename as opb
 from os.path import splitext as ops
 import argparse
-import random
-import sys
 import time
-from typing import List, Union
 from einops import rearrange
 import numpy as np
 
 from omegaconf import OmegaConf
-from scipy import ndimage
 import tifffile
 import torch
 from torch.utils.tensorboard import SummaryWriter
-from tqdm import trange
+from utils import *
 from utils.metrics import calc_psnr, calc_ssim, get_folder_size, parse_checkpoints
 
 from utils.networks import (
-    SIREN,
+    NeRF,
     configure_lr_scheduler,
     configure_optimizer,
     get_nnmodule_param_count,
@@ -45,116 +41,9 @@ METRICS = [
     "decompressed_data_path",
 ]
 EXPERIMENTAL_RESULTS_KEYS = (
-    ["exp_time"] + EXPERIMENTAL_CONDITIONS + METRICS + ["config_path"]
+    ["algorithm_name", "exp_time"] + EXPERIMENTAL_CONDITIONS + METRICS + ["config_path"]
 )
 timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S.%f")[:-3]
-
-
-@dataclass
-class SideInfos:
-    dtype: str = ""
-    depth: int = 0
-    height: int = 0
-    width: int = 0
-    original_min: int = 0
-    original_max: int = 0
-    normalized_min: int = 0
-    normalized_max: int = 0
-
-
-def denoise(
-    data: np.ndarray,
-    denoise_level: int,
-    denoise_close: Union[bool, List[int]],
-) -> np.ndarray:
-    denoised_data = np.copy(data)
-    if denoise_close == False:
-        # using 'denoise_level' as a hard threshold,
-        # the pixel with instensity below this threshold will be set to zero
-        denoised_data[data <= denoise_level] = 0
-    else:
-        # using 'denoise_level' as a soft threshold,
-        # only the pixel with itself and neighbors instensities below this threshold will be set to zero
-        denoised_data[
-            ndimage.binary_opening(
-                data <= denoise_level,
-                structure=np.ones(tuple(list(denoise_close) + [1])),
-                iterations=1,
-            )
-        ] = 0
-    return denoised_data
-
-
-def normalize(data: np.ndarray, sideinfos: SideInfos) -> np.ndarray:
-    """
-    use minmax normalization to scale and offset the data range to [normalized_min,normalized_max]
-    """
-    normalized_min, normalized_max = sideinfos.normalized_min, sideinfos.normalized_max
-    dtype = data.dtype.name
-    data = data.astype(np.float32)
-    original_min = float(data.min())
-    original_max = float(data.max())
-    data = (data - original_min) / (original_max - original_min)
-    data *= normalized_max - normalized_min
-    data += normalized_min
-    sideinfos.dtype = dtype
-    sideinfos.original_min = original_min
-    sideinfos.original_max = original_max
-    return data
-
-
-def inv_normalize(data: np.ndarray, sideinfos: SideInfos) -> np.ndarray:
-    dtype = sideinfos.dtype
-    if dtype == "uint8":
-        dtype = np.uint8
-    elif dtype == "uint12":
-        dtype = np.uint12
-    elif dtype == "uint16":
-        dtype = np.uint16
-    elif dtype == "float32":
-        dtype = np.float32
-    elif dtype == "float64":
-        dtype = np.float64
-    elif dtype == "int16":
-        dtype = np.int16
-    else:
-        raise NotImplementedError
-    data -= sideinfos.normalized_min
-    data /= sideinfos.normalized_max - sideinfos.normalized_min
-    data = np.clip(data, 0, 1)
-    data = (
-        data * (sideinfos.original_max - sideinfos.original_min)
-        + sideinfos.original_min
-    )
-    data = np.array(data, dtype=dtype)
-    return data
-
-
-def generate_weight_map(data: np.ndarray, weight_map_rules: List[str]):
-    """
-    generate weight_map from denoised_data according to a list of wieght_map_rule.
-    weight_map will determine the weights of different pixels in the loss function
-    in the compression optimization problem.
-    """
-    weight_map = np.ones_like(data).astype(np.float32)
-    for weight_map_rule in weight_map_rules:
-        if "value" in weight_map_rule:
-            # e.g. value_0_2000_0.01
-            _, l, h, scale = weight_map_rule.split("_")
-            l, h, scale = float(l), float(h), float(scale)
-            # l, h = range_limit(data, [l, h])
-            weight_map[(data >= l) * (data <= h)] = scale
-        else:
-            raise NotImplementedError
-    return weight_map
-
-
-def reproduc(seed):
-    """make experiments reproducible"""
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
 
 
 if __name__ == "__main__":
@@ -162,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c",
         type=str,
-        default=opj(opd(__file__), "config", "SingleTask", "default.yaml"),
+        default=opj(opd(__file__), "config", "SingleExp", "nerf.yaml"),
         help="yaml file path",
     )
     parser.add_argument(
@@ -183,6 +72,7 @@ if __name__ == "__main__":
     config = OmegaConf.load(config_path)
     output_dir = opj(opd(__file__), "outputs", config.output_dir_name + timestamp)
     os.makedirs(output_dir)
+    print(f"All results are saved in {output_dir}")
     reproduc(config.seed)
     n_training_samples_upper_limit = config.n_training_samples_upper_limit
     n_random_training_samples_percent = config.n_random_training_samples_percent
@@ -226,15 +116,15 @@ if __name__ == "__main__":
     # calculate network structure
     ideal_network_size_bytes = os.path.getsize(data_path) / config.compression_ratio
     ideal_network_parameters_count = ideal_network_size_bytes / 4.0
-    n_network_features = SIREN.calc_features(
+    n_network_features = NeRF.calc_features(
         param_count=ideal_network_parameters_count, **config.network_structure
     )
-    actual_network_parameters_count = SIREN.calc_param_count(
+    actual_network_parameters_count = NeRF.calc_param_count(
         features=n_network_features, **config.network_structure
     )
     actual_network_size_bytes = actual_network_parameters_count * 4.0
     # initialize network
-    network = SIREN(features=n_network_features, **config.network_structure)
+    network = NeRF(features=n_network_features, **config.network_structure)
     assert (
         get_nnmodule_param_count(network) == actual_network_parameters_count
     ), "The calculated network structure mismatch the actual_network_parameters_count!"
@@ -255,6 +145,7 @@ if __name__ == "__main__":
             torch.linspace(
                 coord_normalized_min, coord_normalized_max, sideinfos.height
             ),
+            indexing="ij",
         ),
         axis=-1,
     )
@@ -373,10 +264,13 @@ if __name__ == "__main__":
             ssim = calc_ssim(data[..., 0], decompressed_data[..., 0])
             # record results
             results = {k: None for k in EXPERIMENTAL_RESULTS_KEYS}
+            results["algorithm_name"] = "NeRF"
+            results["exp_time"] = timestamp
             results["original_data_path"] = data_path
             results["config_path"] = config_path
             results["decompressed_data_path"] = decompressed_data_save_path
             results["data_name"] = data_name
+            results["data_type"] = config.data.get("type")
             results["data_shape"] = data_shape
             results["actual_ratio"] = os.path.getsize(data_path) / get_folder_size(
                 compressed_data_save_dir

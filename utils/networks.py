@@ -76,7 +76,7 @@ class SIREN(nn.Module):
         self.net = nn.Sequential(*self.net)
         self.net.apply(sine_init)
         self.net[0].apply(first_layer_sine_init)
-        print(self.net)
+        # print(self.net)
 
     def forward(self, coords):
         output = self.net(coords)
@@ -143,11 +143,8 @@ class NeRF(nn.Module):
         frequencies=10,
         features=256,
         layers=5,
-        skip=True,
     ):
         super().__init__()
-        self.skip = skip
-        self.skip_layer = (layers - 1) // 2 if skip else -1
         self.positional_encoding = PosEncodingNeRF(
             in_channel=coords_channel, frequencies=frequencies
         )
@@ -157,70 +154,40 @@ class NeRF(nn.Module):
             nn.Sequential(nn.Linear(in_channel, features), nn.ReLU(inplace=True))
         )
         for i in range(layers - 2):
-            if self.skip_layer == i + 1:
-                self.net.append(
-                    nn.Sequential(
-                        nn.Linear(in_channel + features, features),
-                        nn.ReLU(inplace=True),
-                    )
-                )
-            else:
-                self.net.append(
-                    nn.Sequential(nn.Linear(features, features), nn.ReLU(inplace=True))
-                )
-        if self.skip_layer == layers - 1:
             self.net.append(
-                nn.Sequential(
-                    nn.Linear(in_channel + features, data_channel), nn.Sigmoid()
-                )
+                nn.Sequential(nn.Linear(features, features), nn.ReLU(inplace=True))
             )
-        else:
-            self.net.append(nn.Sequential(nn.Linear(features, data_channel)))
+        self.net.append(nn.Sequential(nn.Linear(features, data_channel)))
         self.net = nn.ModuleList(self.net)
 
     def forward(self, coords):
         codings = self.positional_encoding(coords)
         output = codings
         for idx, model in enumerate(self.net):
-            if idx == self.skip_layer:
-                output = torch.cat([codings, output], 1)
             output = model(output)
         return output
 
     @staticmethod
     def calc_param_count(
-        coords_channel, data_channel, features, frequencies, layers, skip, **kwargs
+        coords_channel, data_channel, features, frequencies, layers, **kwargs
     ):
         d = coords_channel + 2 * coords_channel * frequencies
-        if skip:
-            param_count = (
-                d * features
-                + features
-                + (layers - 2) * (features**2 + features)
-                + d * features
-                + features * data_channel
-                + data_channel
-            )
-        else:
-            param_count = (
-                d * features
-                + features
-                + (layers - 2) * (features**2 + features)
-                + features * data_channel
-                + data_channel
-            )
+        param_count = (
+            d * features
+            + features
+            + (layers - 2) * (features**2 + features)
+            + features * data_channel
+            + data_channel
+        )
         return int(param_count)
 
     @staticmethod
     def calc_features(
-        param_count, coords_channel, data_channel, frequencies, layers, skip, **kwargs
+        param_count, coords_channel, data_channel, frequencies, layers, **kwargs
     ):
         d = coords_channel + 2 * coords_channel * frequencies
         a = layers - 2
-        if skip:
-            b = 2 * d + 1 + layers - 2 + data_channel
-        else:
-            b = d + 1 + layers - 2 + data_channel
+        b = d + 1 + layers - 2 + data_channel
         c = -param_count + data_channel
         features = round((-b + math.sqrt(b**2 - 4 * a * c)) / (2 * a))
         return features

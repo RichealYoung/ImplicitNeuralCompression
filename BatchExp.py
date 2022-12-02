@@ -17,9 +17,9 @@ timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S.%f")[:-3]
 
 
 def generate_task_list(config_path: str, main_script_path: str):
-    temp_output_dir = opj(opd(__file__), "outputs", "temp_multitask_" + timestamp)
+    temp_output_dir = opj(opd(__file__), "outputs", "BatchExp" + timestamp)
     os.makedirs(temp_output_dir)
-    # read multitask config
+    # read BatchExp config
     config = OmegaConf.load(config_path)
     # parse each task config
     static = omegaconf2dotlist(config.Static)
@@ -44,13 +44,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c",
         type=str,
-        default=opj(opd(__file__), "config", "MultiTask", "default.yaml"),
+        default=opj(opd(__file__), "config", "BatchExp", "sci.yaml"),
         help="config file path",
     )
     parser.add_argument(
         "-stp",
         type=str,
-        default=opj(opd(__file__), "main.py"),
+        default=opj(opd(__file__), "sci.py"),
         help="the singletask script path",
     )
     parser.add_argument(
@@ -67,10 +67,12 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     task_list, temp_output_dir = generate_task_list(args.c, args.stp)
-    try:
-        queue = Queue(task_list, args.g)
-        queue.start(args.t, remind=True)
-        shutil.rmtree(temp_output_dir)
-    except:
-        shutil.rmtree(temp_output_dir)
-        pass
+    queue = Queue(task_list, args.g)
+    queue.start(args.t, remind=True)
+    # try:
+    #     queue = Queue(task_list, args.g)
+    #     queue.start(args.t, remind=True)
+    #     shutil.rmtree(temp_output_dir)
+    # except:
+    #     shutil.rmtree(temp_output_dir)
+    #     pass

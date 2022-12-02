@@ -37,16 +37,16 @@ for the Gurobi optimizer (this is free for academic use). -->
 
 ### 3. Compression
 
-	python main.py -c config/SingleTask/default.yaml -g 2
+	python sci.py -c config/SingleExp/sci.yaml -g 2
 
 All hyper-parameters can be set in the YAML file.
 
 ❗Note: The partition methods will be released soon!
 
 # 🧰Batch Experiments
-We have also provided a useful script for researchers to perform batch experiments quickly. You just need to configure this group of experiments in the YAML file, pick the GPUs, and start batch experiments with the following command.
+We have also provided a useful script 'BatchExp.py' for researchers to perform batch experiments quickly. You just need to configure this group of experiments in the YAML file, pick the GPUs, and start batch experiments with the following command.
 
-	python MultiTask.py -c config/MultiTask/default.yaml -stp main.py -g 0,1,2,3
+	python BatchExp.py -c config/BatchExp/sci.yaml -stp sci.py -g 0,1,2,3
 
 These experiments will automatically wait or execute depending on GPU utilization. All you have to do is a cup of coffee and watching the World Cup⚽.
 # 😘Citations
