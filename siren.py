@@ -72,7 +72,7 @@ if __name__ == "__main__":
     config = OmegaConf.load(config_path)
     output_dir = opj(opd(__file__), "outputs", config.output_dir_name + timestamp)
     os.makedirs(output_dir)
-    print(f"All results are saved in {output_dir}")
+    print(f"All results wll be saved in {output_dir}")
     reproduc(config.seed)
     n_training_samples_upper_limit = config.n_training_samples_upper_limit
     n_random_training_samples_percent = config.n_random_training_samples_percent
