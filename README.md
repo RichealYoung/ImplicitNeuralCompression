@@ -18,21 +18,8 @@ INC data compression algorithms to quickly understand and reproduce our latest r
     conda create -n inc python=3.10
     conda activate inc
 
-### 2. Install python libraries.
-	conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
-    pip3 install omegaconf
-	pip3 install pynvml
-	pip3 install tqdm
-	pip3 install matplotlib
-	pip3 install pandas
-	pip3 install einops
-	pip3 install tifffile
-	pip3 install opencv-python
-	pip3 install scipy
-	pip3 install gurobipy
-	pip3 install tensorboard
-    pip3 install scikit-image
-	pip3 install gpustat
+### 2. Install python libraries
+	pip3 install -r requirements.txt
 <!-- ### 3. Register Gurobi and get license
 
 [Register and install an academic license](https://www.gurobi.com/downloads/free-academic-license/) 
