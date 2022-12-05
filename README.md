@@ -32,7 +32,7 @@ INC data compression algorithms to quickly understand and reproduce our latest r
 	pip3 install gurobipy
 	pip3 install tensorboard
     pip3 install scikit-image
-
+	pipe install gpustat
 <!-- ### 3. Register Gurobi and get license
 
 [Register and install an academic license](https://www.gurobi.com/downloads/free-academic-license/) 
