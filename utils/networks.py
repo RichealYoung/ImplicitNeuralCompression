@@ -218,7 +218,7 @@ def configure_lr_scheduler(optimizer, lr_scheduler_opt):
         lr_scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, **lr_scheduler_opt)
     elif lr_scheduler_name == "StepLR":
         lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, **lr_scheduler_opt)
-    elif lr_scheduler_name == "none":
+    elif lr_scheduler_name == "None":
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
             optimizer, milestones=[100000000000]
         )

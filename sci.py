@@ -93,7 +93,7 @@ if __name__ == "__main__":
     assert (
         len(data.shape) == 4
     ), "Only DHWC data is allowed. Current data shape is {}.".format(*data.shape)
-    sideinfos.depth, sideinfos.width, sideinfos.height, _ = data.shape
+    sideinfos.depth, sideinfos.height, sideinfos.width, _ = data.shape
     n_samples = sideinfos.depth * sideinfos.width * sideinfos.height
     # denoise data
     denoised_data = denoise(data, config.data.denoise_level, config.data.denoise_close)
