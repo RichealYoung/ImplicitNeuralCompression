@@ -9,6 +9,10 @@ INC data compression algorithms to quickly understand and reproduce our latest r
 
 # 🚀Quickstart
 
+### 0. Clone repository
+
+	git clone git@github.com:RichealYoung/ImplicitNeuralCompression.git
+	cd ImplicitNeuralCompression
 ### 1. Create a conda environment
 
     conda create -n inc python=3.10
