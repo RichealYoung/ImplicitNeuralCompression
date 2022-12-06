@@ -87,12 +87,12 @@ if __name__ == "__main__":
     data_extension = ops(opb(data_path))[-1]
     # read original data
     data = tifffile.imread(data_path)
-    data_shape = ",".join([str(i) for i in data.shape])
     if len(data.shape) == 3:
         data = data[..., None]
     assert (
         len(data.shape) == 4
     ), "Only DHWC data is allowed. Current data shape is {}.".format(*data.shape)
+    data_shape = ",".join([str(i) for i in data.shape])
     sideinfos.depth, sideinfos.height, sideinfos.width, _ = data.shape
     n_samples = sideinfos.depth * sideinfos.width * sideinfos.height
     # denoise data
