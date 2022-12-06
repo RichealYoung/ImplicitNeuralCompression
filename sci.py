@@ -91,7 +91,7 @@ if __name__ == "__main__":
         data = data[..., None]
     assert (
         len(data.shape) == 4
-    ), "Only DHWC data is allowed. Current data shape is {}.".format(*data.shape)
+    ), "Only DHWC data is allowed. Current data shape is {}.".format(data.shape)
     data_shape = ",".join([str(i) for i in data.shape])
     sideinfos.depth, sideinfos.height, sideinfos.width, _ = data.shape
     n_samples = sideinfos.depth * sideinfos.width * sideinfos.height
