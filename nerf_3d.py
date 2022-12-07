@@ -214,12 +214,12 @@ if __name__ == "__main__":
             os.makedirs(curr_steps_dir)
             compressed_data_save_dir = opj(curr_steps_dir, "compressed")
             os.makedirs(compressed_data_save_dir)
-            network_parameters_save_path = opj(
+            network_parameters_save_dir = opj(
                 compressed_data_save_dir, "network_parameters"
             )
             sideinfos_save_path = opj(compressed_data_save_dir, "sideinfos.yaml")
             OmegaConf.save(sideinfos.__dict__, sideinfos_save_path)
-            save_model(network, network_parameters_save_path, "cuda")
+            save_model(network, network_parameters_save_dir, "cuda")
             # decompress data
             with torch.no_grad():
                 flattened_coords = rearrange(coordinates, "d h w c-> (d h w) c")
@@ -273,7 +273,7 @@ if __name__ == "__main__":
             results["data_type"] = config.data.get("type")
             results["data_shape"] = data_shape
             results["actual_ratio"] = os.path.getsize(data_path) / get_folder_size(
-                compressed_data_save_dir
+                network_parameters_save_dir
             )
             results["psnr"] = psnr
             results["ssim"] = ssim
