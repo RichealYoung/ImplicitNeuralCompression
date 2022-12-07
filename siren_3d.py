@@ -141,10 +141,10 @@ if __name__ == "__main__":
     coordinates = torch.stack(
         torch.meshgrid(
             torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.depth),
-            torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.width),
             torch.linspace(
                 coord_normalized_min, coord_normalized_max, sideinfos.height
             ),
+            torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.width),
             indexing="ij",
         ),
         axis=-1,

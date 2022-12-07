@@ -142,10 +142,10 @@ if __name__ == "__main__":
         torch.meshgrid(
             torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.time),
             torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.depth),
-            torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.width),
             torch.linspace(
                 coord_normalized_min, coord_normalized_max, sideinfos.height
             ),
+            torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.width),
             indexing="ij",
         ),
         axis=-1,
