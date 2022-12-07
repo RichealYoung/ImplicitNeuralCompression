@@ -1,0 +1,35 @@
+output_dir_name:  SingleExp
+seed: 42
+n_training_samples_upper_limit: 1000000
+n_random_training_samples_percent: 0
+n_training_steps: 80000
+checkpoints: every_10000
+n_print_loss_interval: 100
+n_inference_batch_size: 100000
+pretrained_network_path: ~
+data:
+  path: dataset/brain/64x64x64/brain-64_128-64_128-192_256.tif
+  type: HiPCT-brain
+  denoise_level: 0
+  denoise_close: [2,2,2]
+  normalized_min: 0
+  normalized_max: 100
+  weight_map_rules: ~
+compression_ratio: 256
+network_structure:
+  coords_channel: 3
+  data_channel: 1
+  layers: 5
+  frequencies: 10
+coord_normalized_min: -1
+coord_normalized_max: 1
+optimizer:
+  name: Adamax
+  lr: 0.001
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 0
+lr_scheduler:
+  name: MultiStepLR
+  milestones: [50000,60000,70000]
+  gamma: 0.2
