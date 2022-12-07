@@ -62,7 +62,9 @@ def denoise(
     return denoised_data
 
 
-def normalize(data: np.ndarray, sideinfos: SideInfos) -> np.ndarray:
+def normalize(
+    data: np.ndarray, sideinfos: Union[SideInfos3D, SideInfos4D]
+) -> np.ndarray:
     """
     use minmax normalization to scale and offset the data range to [normalized_min,normalized_max]
     """
@@ -80,7 +82,9 @@ def normalize(data: np.ndarray, sideinfos: SideInfos) -> np.ndarray:
     return data
 
 
-def inv_normalize(data: np.ndarray, sideinfos: SideInfos) -> np.ndarray:
+def inv_normalize(
+    data: np.ndarray, sideinfos: Union[SideInfos3D, SideInfos4D]
+) -> np.ndarray:
     dtype = sideinfos.dtype
     if dtype == "uint8":
         dtype = np.uint8
