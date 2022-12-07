@@ -1,8 +1,8 @@
 Dynamic:
   - PRODUCT:
     - CONCAT:
-      - data.path: dataset/brain/64x64x64/brain-64_128-64_128-192_256.tif
-        data.type: HiPCT-brain
+      - data.path: dataset/brain_fmri.tif
+        data.type: FMRI-brain
     - CONCAT:
       - compression_ratio: 128
       - compression_ratio: 256
@@ -20,20 +20,19 @@ Static:
   n_inference_batch_size: 100000
   pretrained_network_path: ~
   data:
-    path: dataset/brain/64x64x64/brain-64_128-64_128-192_256.tif
-    type: HiPCT-brain
+    path: dataset/brain_fmri.tif
+    type: FMRI-brain
     denoise_level: 0
-    denoise_close: [2,2,2]
+    denoise_close: [1,2,2,2]
     normalized_min: 0
     normalized_max: 100
     weight_map_rules: ~
   compression_ratio: 256
   network_structure:
-    coords_channel: 3
+    coords_channel: 4
     data_channel: 1
     layers: 5
     w0: 20
-    output_act: false
   coord_normalized_min: -1
   coord_normalized_max: 1
   optimizer:

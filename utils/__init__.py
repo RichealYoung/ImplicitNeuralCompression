@@ -15,8 +15,21 @@ import torch
 
 
 @dataclass
-class SideInfos:
+class SideInfos3D:
     dtype: str = ""
+    depth: int = 0
+    height: int = 0
+    width: int = 0
+    original_min: int = 0
+    original_max: int = 0
+    normalized_min: int = 0
+    normalized_max: int = 0
+
+
+@dataclass
+class SideInfos4D:
+    dtype: str = ""
+    time: int = 0
     depth: int = 0
     height: int = 0
     width: int = 0

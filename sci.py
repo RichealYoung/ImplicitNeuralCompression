@@ -28,7 +28,7 @@ from utils.networks import (
     load_model,
     save_model,
 )
-from utils.samplers import RandomPointSampler
+from utils.samplers import RandomPointSampler3D
 
 
 EXPERIMENTAL_CONDITIONS = ["data_name", "data_type", "data_shape", "actual_ratio"]
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     tblogger = SummaryWriter(output_dir)
     ###########################
     # 2. prepare data, weight_map
-    sideinfos = SideInfos()
+    sideinfos = SideInfos3D()
     # parse name and extension
     data_path = config.data.path
     data_name = ops(opb(data_path))[0]
@@ -172,7 +172,7 @@ if __name__ == "__main__":
             )
         )
     if sampling_required:
-        sampler = RandomPointSampler(
+        sampler = RandomPointSampler3D(
             coordinates, normalized_data, weight_map, n_random_training_samples
         )
     else:

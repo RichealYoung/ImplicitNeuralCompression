@@ -20,7 +20,7 @@ network_structure:
   coords_channel: 4
   data_channel: 1
   layers: 5
-  w0: 20
+  frequencies: 10
 coord_normalized_min: -1
 coord_normalized_max: 1
 optimizer:

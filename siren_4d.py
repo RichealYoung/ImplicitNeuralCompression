@@ -28,7 +28,7 @@ from utils.networks import (
     load_model,
     save_model,
 )
-from utils.samplers import RandomPointSampler3D
+from utils.samplers import RandomPointSampler4D
 
 
 EXPERIMENTAL_CONDITIONS = ["data_name", "data_type", "data_shape", "actual_ratio"]
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c",
         type=str,
-        default=opj(opd(__file__), "config", "SingleExp", "siren_3d.yaml"),
+        default=opj(opd(__file__), "config", "SingleExp", "siren_4d.yaml"),
         help="yaml file path",
     )
     parser.add_argument(
@@ -80,26 +80,26 @@ if __name__ == "__main__":
     tblogger = SummaryWriter(output_dir)
     ###########################
     # 2. prepare data, weight_map
-    sideinfos = SideInfos3D()
+    sideinfos = SideInfos4D()
     # parse name and extension
     data_path = config.data.path
     data_name = ops(opb(data_path))[0]
     data_extension = ops(opb(data_path))[-1]
     # read original data
-    data = tifffile.imread(data_path)
-    if len(data.shape) == 3:
-        data = data[..., None]
+    data = tifffile.imread(data_path, squeeze=False)
     assert (
-        len(data.shape) == 4
-    ), "Only DHWC data is allowed. Current data shape is {}.".format(data.shape)
+        len(data.shape) == 6
+    ), "Only TDCHWS data is allowed. Current data shape is {}.".format(data.shape)
+    data = rearrange(data, "t d c h w s-> t d h w (c s)")
     data_shape = ",".join([str(i) for i in data.shape])
-    sideinfos.depth, sideinfos.height, sideinfos.width, _ = data.shape
-    n_samples = sideinfos.depth * sideinfos.width * sideinfos.height
+    sideinfos.time, sideinfos.depth, sideinfos.height, sideinfos.width, _ = data.shape
+    n_samples = sideinfos.time * sideinfos.depth * sideinfos.width * sideinfos.height
     # denoise data
     denoised_data = denoise(data, config.data.denoise_level, config.data.denoise_close)
     tifffile.imwrite(
         opj(output_dir, data_name + "_denoised" + data_extension),
-        denoised_data,
+        rearrange(denoised_data, "T D H W C -> T D C H W"),
+        imagej=True,
     )
     # normalize data
     sideinfos.normalized_min = config.data.normalized_min
@@ -135,11 +135,12 @@ if __name__ == "__main__":
     network.cuda()
     ###########################
     # 4. prepare coordinates
-    # shape:(d*h*w,3)
+    # shape:(t*d*h*w,4)
     coord_normalized_min = config.coord_normalized_min
     coord_normalized_max = config.coord_normalized_max
     coordinates = torch.stack(
         torch.meshgrid(
+            torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.time),
             torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.depth),
             torch.linspace(coord_normalized_min, coord_normalized_max, sideinfos.width),
             torch.linspace(
@@ -172,13 +173,13 @@ if __name__ == "__main__":
             )
         )
     if sampling_required:
-        sampler = RandomPointSampler3D(
+        sampler = RandomPointSampler4D(
             coordinates, normalized_data, weight_map, n_random_training_samples
         )
     else:
-        coords_batch = rearrange(coordinates, "d h w c-> (d h w) c")
-        gt_batch = rearrange(normalized_data, "d h w c-> (d h w) c")
-        weight_map_batch = rearrange(weight_map, "d h w c-> (d h w) c")
+        coords_batch = rearrange(coordinates, "t d h w c-> (t d h w) c")
+        gt_batch = rearrange(normalized_data, "t d h w c-> (t d h w) c")
+        weight_map_batch = rearrange(weight_map, "t d h w c-> (t d h w) c")
     ###########################
     # 7. optimizing
     checkpoints = parse_checkpoints(config.checkpoints, n_training_steps)
@@ -214,15 +215,15 @@ if __name__ == "__main__":
             os.makedirs(curr_steps_dir)
             compressed_data_save_dir = opj(curr_steps_dir, "compressed")
             os.makedirs(compressed_data_save_dir)
-            network_parameters_save_dir = opj(
+            network_parameters_save_path = opj(
                 compressed_data_save_dir, "network_parameters"
             )
             sideinfos_save_path = opj(compressed_data_save_dir, "sideinfos.yaml")
             OmegaConf.save(sideinfos.__dict__, sideinfos_save_path)
-            save_model(network, network_parameters_save_dir, "cuda")
+            save_model(network, network_parameters_save_path, "cuda")
             # decompress data
             with torch.no_grad():
-                flattened_coords = rearrange(coordinates, "d h w c-> (d h w) c")
+                flattened_coords = rearrange(coordinates, "t d h w c-> (t d h w) c")
                 flattened_decompressed_data = torch.zeros(
                     (n_samples, 1),
                     device="cuda",
@@ -244,7 +245,8 @@ if __name__ == "__main__":
                 )
                 decompressed_data = rearrange(
                     flattened_decompressed_data,
-                    "(d h w) c -> d h w c",
+                    "(t d h w) c -> t d h w c",
+                    t=sideinfos.time,
                     d=sideinfos.depth,
                     h=sideinfos.height,
                     w=sideinfos.width,
@@ -258,7 +260,11 @@ if __name__ == "__main__":
                 decompressed_data_save_dir,
                 data_name + "_decompressed" + data_extension,
             )
-            tifffile.imwrite(decompressed_data_save_path, decompressed_data)
+            tifffile.imwrite(
+                decompressed_data_save_path,
+                rearrange(decompressed_data, "T D H W C -> T D C H W"),
+                imagej=True,
+            )
             # calculate metrics
             psnr = calc_psnr(data[..., 0], decompressed_data[..., 0])
             ssim = calc_ssim(data[..., 0], decompressed_data[..., 0])
@@ -273,7 +279,7 @@ if __name__ == "__main__":
             results["data_type"] = config.data.get("type")
             results["data_shape"] = data_shape
             results["actual_ratio"] = os.path.getsize(data_path) / get_folder_size(
-                network_parameters_save_dir
+                compressed_data_save_dir
             )
             results["psnr"] = psnr
             results["ssim"] = ssim

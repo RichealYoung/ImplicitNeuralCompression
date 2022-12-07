@@ -21,6 +21,7 @@ Static:
   pretrained_network_path: ~
   data:
     path: dataset/brain/64x64x64/brain-64_128-64_128-192_256.tif
+    type: HiPCT-brain
     denoise_level: 0
     denoise_close: [2,2,2]
     normalized_min: 0
