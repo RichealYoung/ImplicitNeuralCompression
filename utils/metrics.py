@@ -40,8 +40,6 @@ def get_type_max(data):
         max = 65535
     elif dtype == "float64":
         max = 65535
-    elif dtype == "int16":
-        max = 65535
     else:
         raise NotImplementedError
     return max

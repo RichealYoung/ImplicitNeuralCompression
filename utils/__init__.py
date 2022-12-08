@@ -96,8 +96,6 @@ def inv_normalize(
         dtype = np.float32
     elif dtype == "float64":
         dtype = np.float64
-    elif dtype == "int16":
-        dtype = np.int16
     else:
         raise NotImplementedError
     data -= sideinfos.normalized_min
