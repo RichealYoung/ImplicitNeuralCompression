@@ -54,11 +54,7 @@ if __name__ == "__main__":
         default=opj(opd(__file__), "config", "SingleExp", "sci.yaml"),
         help="yaml file path",
     )
-    parser.add_argument(
-        "-g",
-        help="gpu index",
-        default="0",
-    )
+    parser.add_argument("-g", type=str, default="0", help="gpu index")
     args = parser.parse_args()
     config_path = os.path.abspath(args.c)
     # Make the gpu index used by CUDA_VISIBLE_DEVICES consistent with the gpu index shown in nvidia-smi
