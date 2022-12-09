@@ -56,17 +56,15 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-g",
-        help="availabel gpu list",
-        default="0,1,2,3",
-        type=lambda s: [int(item) for item in s.split(",")],
+        help="gpu index",
+        default="0",
     )
     args = parser.parse_args()
-    gpu_list = args.g
     config_path = os.path.abspath(args.c)
     # Make the gpu index used by CUDA_VISIBLE_DEVICES consistent with the gpu index shown in nvidia-smi
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     # Specify the gpu index to be used
-    os.environ["CUDA_VISIBLE_DEVICES"] = ",".join([str(i) for i in gpu_list])
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.g
     ###########################
     # 1. load config
     config = OmegaConf.load(config_path)
