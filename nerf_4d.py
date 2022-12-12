@@ -174,6 +174,10 @@ if __name__ == "__main__":
         coords_batch = rearrange(coordinates, "t d h w c-> (t d h w) c")
         gt_batch = rearrange(normalized_data, "t d h w c-> (t d h w) c")
         weight_map_batch = rearrange(weight_map, "t d h w c-> (t d h w) c")
+    if sampling_required:
+        print(f"Use mini-batch training with batch-size={n_random_training_samples}")
+    else:
+        print(f"Use batch training with batch-size={n_samples}")
     ###########################
     # 7. optimizing
     checkpoints = parse_checkpoints(config.checkpoints, n_training_steps)
