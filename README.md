@@ -1,6 +1,5 @@
 # 💾Implicit Neural Compression (INC)
-Welcome to INC! This repository is aimed at helping researchers or developers interested in
-INC data compression algorithms to quickly understand and reproduce our latest research.
+Our paper was accepted to AAAI2023. You can also find our full-version paper [on arXiv](https://arxiv.org/abs/2209.15180)
 
 <img src="docs/assets_readme/SCI_method.jpg" width="80%"/>
 
