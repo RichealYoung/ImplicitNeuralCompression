@@ -38,7 +38,7 @@ We have also provided a useful script 'BatchExp.py' for researchers to perform b
 
 	python BatchExp.py -c config/BatchExp/sci.yaml -stp sci.py -g 0,1,2,3
 
-These experiments will automatically wait or execute depending on GPU utilization. All you have to do is a cup of coffee and watching the World Cup⚽.
+These experiments will automatically wait or execute depending on GPU utilization..
 # 😘Citations
 
 	@misc{https://doi.org/10.48550/arxiv.2209.15180,
