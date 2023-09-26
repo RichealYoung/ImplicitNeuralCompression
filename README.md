@@ -40,14 +40,15 @@ We have also provided a useful script 'BatchExp.py' for researchers to perform b
 These experiments will automatically wait or execute depending on GPU utilization..
 # 😘Citations
 
-	@misc{yang2022sci,
-      title={SCI: A Spectrum Concentrated Implicit Neural Compression for Biomedical Data}, 
-      author={Runzhao Yang and Tingxiong Xiao and Yuxiao Cheng and Qianni Cao and Jinyuan Qu and Jinli Suo and Qionghai Dai},
-      year={2022},
-      eprint={2209.15180},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV}
-	}
+	@inproceedings{yang2023sci,
+  title={Sci: A spectrum concentrated implicit neural compression for biomedical data},
+  author={Yang, Runzhao and Xiao, Tingxiong and Cheng, Yuxiao and Cao, Qianni and Qu, Jinyuan and Suo, Jinli and Dai, Qionghai},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={37},
+  number={4},
+  pages={4774--4782},
+  year={2023}
+}
 
 # 💡Contact
 If you need any help or are looking for cooperation feel free to contact us.
