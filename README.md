@@ -41,14 +41,14 @@ These experiments will automatically wait or execute depending on GPU utilizatio
 # 😘Citations
 
 	@inproceedings{yang2023sci,
-  title={Sci: A spectrum concentrated implicit neural compression for biomedical data},
-  author={Yang, Runzhao and Xiao, Tingxiong and Cheng, Yuxiao and Cao, Qianni and Qu, Jinyuan and Suo, Jinli and Dai, Qionghai},
-  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
-  volume={37},
-  number={4},
-  pages={4774--4782},
-  year={2023}
-}
+	  title={Sci: A spectrum concentrated implicit neural compression for biomedical data},
+	  author={Yang, Runzhao and Xiao, Tingxiong and Cheng, Yuxiao and Cao, Qianni and Qu, Jinyuan and Suo, Jinli and Dai, Qionghai},
+	  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+	  volume={37},
+	  number={4},
+	  pages={4774--4782},
+	  year={2023}
+	}
 
 # 💡Contact
 If you need any help or are looking for cooperation feel free to contact us.
