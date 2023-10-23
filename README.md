@@ -1,5 +1,5 @@
 # 💾Implicit Neural Compression (INC)
-⭐We have provided PyTorch and CUDA versions of the SCI method's code, which can be found in [BRIEF_PyTorch](https://github.com/RichealYoung/BRIEF_PyTorch) and [BRUEF_CUDA](https://github.com/RichealYoung/BRIEF_CUDA), respectively.
+⭐We have provided PyTorch and CUDA versions of the SCI method's code, which can be found in [BRIEF_PyTorch](https://github.com/RichealYoung/BRIEF_PyTorch) and [BRIEF_CUDA](https://github.com/RichealYoung/BRIEF_CUDA), respectively.
 
 
 Our paper was accepted to AAAI2023. You can also find our full-version paper [on arXiv](https://arxiv.org/abs/2209.15180)
